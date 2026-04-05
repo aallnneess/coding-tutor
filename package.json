@@ -1,0 +1,17 @@
+  {
+    "name": "coding-tutor-skill",
+    "version": "0.1.0",
+    "description": "A coding tutor skill for AI agents. Learning by building, learning by analogy.",
+    "type": "module",
+    "bin": {
+      "coding-tutor-skill": "./bin/install.js"
+    },
+    "files": [
+      "bin",
+      "skills",
+      "prompts",
+      "adapters"
+    ],
+    "keywords": ["claude", "cursor", "ai", "tutor", "skill", "coding"],
+    "license": "MIT"
+  }
