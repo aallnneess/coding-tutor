@@ -5,28 +5,72 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const projectRoot = path.join(__dirname, '..')
 const home = process.env.HOME || process.env.USERPROFILE
 
 const agents = {
   'claude-code': {
     detect: path.join(home, '.claude'),
-    target: path.join(home, '.claude', 'skills'),
+    target: (skillName) => path.join(home, '.claude', 'skills'),
+    filename: (skillName) => `${skillName}.md`,
     label: 'Claude Code',
-    usage: 'Use /tutor to start a tutoring session.',
   },
   cursor: {
     detect: path.join(home, '.cursor'),
-    target: path.join(home, '.cursor', 'skills'),
+    target: (skillName) => path.join(home, '.cursor', 'skills'),
+    filename: (skillName) => `${skillName}.md`,
     label: 'Cursor',
-    usage: 'Use /tutor in the Cursor chat to start a tutoring session.',
+  },
+  opencode: {
+    detect: path.join(home, '.config', 'opencode'),
+    target: (skillName) => path.join(home, '.config', 'opencode', 'skills', skillName),
+    filename: () => 'SKILL.md',
+    label: 'OpenCode',
   },
 }
 
-const skillSrc = path.join(__dirname, '..', 'skills', 'tutor.md')
+// Parse --skill flag
+const skillFlag = process.argv.indexOf('--skill')
+const skillName = skillFlag !== -1 ? process.argv[skillFlag + 1] : null
 
-// Allow explicit agent override: --agent claude-code | cursor
+// Parse --agent flag
 const agentFlag = process.argv.indexOf('--agent')
 const forcedAgent = agentFlag !== -1 ? process.argv[agentFlag + 1] : null
+
+// List available skills
+function getAvailableSkills() {
+  return fs.readdirSync(projectRoot).filter(dir => {
+    const skillPath = path.join(projectRoot, dir, 'skill.md')
+    return fs.existsSync(skillPath)
+  })
+}
+
+// Show help and available skills
+function showHelp() {
+  const skills = getAvailableSkills()
+  console.log('\nUsage: npx coding-tutor-skill --skill <name> [--agent <agent>] [--print]')
+  console.log('\nAvailable skills:', skills.join(', ') || '(none)')
+  console.log('Supported agents:', Object.keys(agents).join(', '))
+  console.log('\nExamples:')
+  console.log('  npx coding-tutor-skill --skill tutor')
+  console.log('  npx coding-tutor-skill --skill tutor --agent claude-code')
+  console.log('  npx coding-tutor-skill --skill tutor --print\n')
+  process.exit(1)
+}
+
+// If no skill specified, show help
+if (!skillName) {
+  showHelp()
+}
+
+// Validate skill exists
+const skillSrc = path.join(projectRoot, skillName, 'skill.md')
+if (!fs.existsSync(skillSrc)) {
+  console.error(`\nSkill "${skillName}" not found.`)
+  const skills = getAvailableSkills()
+  console.log('Available skills:', skills.join(', ') || '(none)')
+  process.exit(1)
+}
 
 // Print raw prompt and exit
 if (process.argv.includes('--print')) {
@@ -41,11 +85,14 @@ function install(agentKey) {
     process.exit(1)
   }
 
-  fs.mkdirSync(agent.target, { recursive: true })
-  fs.copyFileSync(skillSrc, path.join(agent.target, 'tutor.md'))
+  const targetDir = agent.target(skillName)
+  const targetFile = agent.filename(skillName)
 
-  console.log(`\n✓ coding-tutor-skill installed for ${agent.label}`)
-  console.log(`  ${agent.usage}\n`)
+  fs.mkdirSync(targetDir, { recursive: true })
+  fs.copyFileSync(skillSrc, path.join(targetDir, targetFile))
+
+  console.log(`\n✓ ${skillName} skill installed for ${agent.label}`)
+  console.log(`  Use /${skillName} to start a session.\n`)
 }
 
 if (forcedAgent) {
@@ -61,11 +108,11 @@ if (forcedAgent) {
     install(detected)
   } else {
     console.log('\nNo supported agent detected.')
-    console.log('Supported agents: claude-code, cursor')
-    console.log('\nOptions:')
-    console.log('  npx coding-tutor-skill --agent claude-code')
-    console.log('  npx coding-tutor-skill --agent cursor')
-    console.log('  npx coding-tutor-skill --print   (print raw prompt)\n')
+    console.log('Supported agents:', Object.keys(agents).join(', '))
+    console.log('\nSpecify an agent:')
+    console.log(`  npx coding-tutor-skill --skill ${skillName} --agent claude-code`)
+    console.log(`  npx coding-tutor-skill --skill ${skillName} --agent cursor`)
+    console.log(`  npx coding-tutor-skill --skill ${skillName} --agent opencode\n`)
     process.exit(1)
   }
 }
