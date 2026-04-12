@@ -12,6 +12,7 @@ A learning toolkit for AI coding agents. Turns Claude Code, Cursor, OpenCode, or
 | **explainer** | `/explainer` | Deep-dive into code, libraries, concepts |
 | **reviewer** | `/reviewer` | Get mentor-style code review |
 | **lecture** | `/lecture <topic>` | Grok concepts through Socratic dialogue |
+| **course-builder** | `/course` | Transform any syllabus into a personalized learning course |
 
 ## Install
 
@@ -21,6 +22,7 @@ Install a skill:
 npx coding-tutor-skill --skill tutor
 npx coding-tutor-skill --skill lecture
 npx coding-tutor-skill --skill debugger
+npx coding-tutor-skill --skill course-builder
 ```
 
 Auto-detects your agent. Or specify one explicitly:
@@ -52,6 +54,7 @@ npx coding-tutor-skill --skill tutor --print
 /explainer      → Understand unfamiliar code or library
 /reviewer       → Get your code reviewed with specific feedback
 /lecture https  → Deep-dive into how HTTPS works
+/course         → Build a personalized course from any syllabus
 ```
 
 ## Philosophy
@@ -78,6 +81,8 @@ coding-tutor/
 ├── reviewer/
 │   └── skill.md
 ├── lecture/
+│   └── skill.md
+├── course-builder/
 │   └── skill.md
 ├── bin/
 │   └── install.js
