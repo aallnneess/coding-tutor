@@ -11,7 +11,7 @@ const home = process.env.HOME || process.env.USERPROFILE
 const agents = {
   'claude-code': {
     detect: path.join(home, '.claude'),
-    target: (skillName) => path.join(home, '.claude', 'skills'),
+    target: (skillName) => path.join(home, '.claude', 'commands'),
     filename: (skillName) => `${skillName}.md`,
     label: 'Claude Code',
   },

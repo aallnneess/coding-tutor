@@ -13,6 +13,7 @@ A learning toolkit for AI coding agents. Turns Claude Code, Cursor, OpenCode, or
 | **reviewer** | `/reviewer` | Get mentor-style code review |
 | **lecture** | `/lecture <topic>` | Grok concepts through Socratic dialogue |
 | **course-builder** | `/course` | Transform any syllabus into a personalized learning course |
+| **interviewer** | `/interviewer` | Simulate a technical interview at junior, middle, or senior level |
 
 ## Install
 
@@ -55,6 +56,7 @@ npx coding-tutor-skill --skill tutor --print
 /reviewer       → Get your code reviewed with specific feedback
 /lecture https  → Deep-dive into how HTTPS works
 /course         → Build a personalized course from any syllabus
+/interviewer    → Run a technical interview (junior/middle/senior, assistant/challenge/guide)
 ```
 
 ## Philosophy
@@ -83,6 +85,8 @@ coding-tutor/
 ├── lecture/
 │   └── skill.md
 ├── course-builder/
+│   └── skill.md
+├── interviewer/
 │   └── skill.md
 ├── bin/
 │   └── install.js
