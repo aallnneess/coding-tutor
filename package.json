@@ -8,9 +8,14 @@
     },
     "files": [
       "bin",
-      "skills",
-      "prompts",
-      "adapters"
+      "challenger",
+      "course-builder",
+      "debugger",
+      "explainer",
+      "interviewer",
+      "lecture",
+      "reviewer",
+      "tutor"
     ],
     "keywords": ["claude", "cursor", "ai", "tutor", "skill", "coding"],
     "license": "MIT"

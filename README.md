@@ -1,6 +1,6 @@
 # coding-tutor-skill
 
-A learning toolkit for AI coding agents. Turns Claude Code, Cursor, OpenCode, or any supported agent into a programming mentor that guides without doing the work for you.
+A learning toolkit for AI coding agents. Turns Claude Code, Cursor, OpenCode, Codex, or any supported agent into a programming mentor that guides without doing the work for you.
 
 ## Skills
 
@@ -32,6 +32,7 @@ Auto-detects your agent. Or specify one explicitly:
 npx coding-tutor-skill --skill tutor --agent claude-code
 npx coding-tutor-skill --skill tutor --agent cursor
 npx coding-tutor-skill --skill tutor --agent opencode
+npx coding-tutor-skill --skill tutor --agent codex
 ```
 
 List available skills:
@@ -100,4 +101,5 @@ coding-tutor/
 | Claude Code | Supported |
 | Cursor | Supported |
 | OpenCode | Supported |
+| Codex | Supported |
 | Other | Use `--print` for manual install |

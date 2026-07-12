@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const projectRoot = path.join(__dirname, '..')
 const home = process.env.HOME || process.env.USERPROFILE
+const codexHome = process.env.CODEX_HOME || path.join(home, '.codex')
 
 const agents = {
   'claude-code': {
@@ -14,18 +15,28 @@ const agents = {
     target: (skillName) => path.join(home, '.claude', 'commands'),
     filename: (skillName) => `${skillName}.md`,
     label: 'Claude Code',
+    usage: (skillName) => `Use /${skillName} to start a session.`,
   },
   cursor: {
     detect: path.join(home, '.cursor'),
     target: (skillName) => path.join(home, '.cursor', 'skills'),
     filename: (skillName) => `${skillName}.md`,
     label: 'Cursor',
+    usage: (skillName) => `Use /${skillName} to start a session.`,
   },
   opencode: {
     detect: path.join(home, '.config', 'opencode'),
     target: (skillName) => path.join(home, '.config', 'opencode', 'skills', skillName),
     filename: () => 'SKILL.md',
     label: 'OpenCode',
+    usage: (skillName) => `Use /${skillName} to start a session.`,
+  },
+  codex: {
+    detect: codexHome,
+    target: (skillName) => path.join(codexHome, 'skills', skillName),
+    filename: () => 'SKILL.md',
+    label: 'Codex',
+    usage: (skillName) => `Mention ${skillName} in your next Codex prompt to use this skill.`,
   },
 }
 
@@ -54,6 +65,7 @@ function showHelp() {
   console.log('\nExamples:')
   console.log('  npx coding-tutor-skill --skill tutor')
   console.log('  npx coding-tutor-skill --skill tutor --agent claude-code')
+  console.log('  npx coding-tutor-skill --skill tutor --agent codex')
   console.log('  npx coding-tutor-skill --skill tutor --print\n')
   process.exit(1)
 }
@@ -92,7 +104,7 @@ function install(agentKey) {
   fs.copyFileSync(skillSrc, path.join(targetDir, targetFile))
 
   console.log(`\n✓ ${skillName} skill installed for ${agent.label}`)
-  console.log(`  Use /${skillName} to start a session.\n`)
+  console.log(`  ${agent.usage(skillName)}\n`)
 }
 
 if (forcedAgent) {
@@ -112,7 +124,8 @@ if (forcedAgent) {
     console.log('\nSpecify an agent:')
     console.log(`  npx coding-tutor-skill --skill ${skillName} --agent claude-code`)
     console.log(`  npx coding-tutor-skill --skill ${skillName} --agent cursor`)
-    console.log(`  npx coding-tutor-skill --skill ${skillName} --agent opencode\n`)
+    console.log(`  npx coding-tutor-skill --skill ${skillName} --agent opencode`)
+    console.log(`  npx coding-tutor-skill --skill ${skillName} --agent codex\n`)
     process.exit(1)
   }
 }
