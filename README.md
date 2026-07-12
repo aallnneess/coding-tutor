@@ -35,6 +35,28 @@ npx coding-tutor-skill --skill tutor --agent opencode
 npx coding-tutor-skill --skill tutor --agent codex
 ```
 
+Install from a cloned repository:
+
+```bash
+git clone https://github.com/zeufack/coding-tutor.git
+cd coding-tutor
+node ./bin/install.js --skill tutor --agent codex
+```
+
+Use this local install path when testing repository changes or when you want to install without `npx`.
+
+For Codex, the installer writes the skill to:
+
+```text
+$CODEX_HOME/skills/<skill-name>/SKILL.md
+```
+
+If `CODEX_HOME` is not set, it falls back to:
+
+```text
+~/.codex/skills/<skill-name>/SKILL.md
+```
+
 List available skills:
 
 ```bash
