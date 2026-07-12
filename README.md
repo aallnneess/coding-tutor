@@ -33,7 +33,16 @@ npx coding-tutor-skill --skill tutor --agent claude-code
 npx coding-tutor-skill --skill tutor --agent cursor
 npx coding-tutor-skill --skill tutor --agent opencode
 npx coding-tutor-skill --skill tutor --agent codex
+npx coding-tutor-skill --skill tutor --agent kilo-code
 ```
+
+Kilo Code support is for the Kilo Code extension in VS Code. It installs a read-only Coding Tutor agent to:
+
+```text
+~/.config/kilo/agent/coding-tutor.md
+```
+
+Then select **Coding Tutor** from the Kilo Code VS Code agent picker.
 
 Install from a cloned repository:
 
@@ -111,6 +120,9 @@ coding-tutor/
 │   └── skill.md
 ├── interviewer/
 │   └── skill.md
+├── kilo-code/
+│   └── agent/
+│       └── coding-tutor.md
 ├── bin/
 │   └── install.js
 └── package.json
@@ -124,4 +136,5 @@ coding-tutor/
 | Cursor | Supported |
 | OpenCode | Supported |
 | Codex | Supported |
+| Kilo Code for VS Code | Supported |
 | Other | Use `--print` for manual install |

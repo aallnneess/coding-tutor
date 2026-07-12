@@ -8,6 +8,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const projectRoot = path.join(__dirname, '..')
 const home = process.env.HOME || process.env.USERPROFILE
 const codexHome = process.env.CODEX_HOME || path.join(home, '.codex')
+const kiloHome = process.env.KILO_CONFIG_DIR || path.join(home, '.config', 'kilo')
 
 const agents = {
   'claude-code': {
@@ -38,6 +39,14 @@ const agents = {
     label: 'Codex',
     usage: (skillName) => `Mention ${skillName} in your next Codex prompt to use this skill.`,
   },
+  'kilo-code': {
+    detect: kiloHome,
+    target: () => path.join(kiloHome, 'agent'),
+    filename: (skillName) => skillName === 'tutor' ? 'coding-tutor.md' : `coding-${skillName}.md`,
+    source: (skillName) => path.join(projectRoot, 'kilo-code', 'agent', skillName === 'tutor' ? 'coding-tutor.md' : `coding-${skillName}.md`),
+    label: 'Kilo Code for VS Code',
+    usage: () => 'Use the Kilo Code VS Code extension agent picker and select Coding Tutor.',
+  },
 }
 
 // Parse --skill flag
@@ -47,6 +56,8 @@ const skillName = skillFlag !== -1 ? process.argv[skillFlag + 1] : null
 // Parse --agent flag
 const agentFlag = process.argv.indexOf('--agent')
 const forcedAgent = agentFlag !== -1 ? process.argv[agentFlag + 1] : null
+
+const dryRun = process.argv.includes('--dry-run')
 
 // List available skills
 function getAvailableSkills() {
@@ -59,13 +70,14 @@ function getAvailableSkills() {
 // Show help and available skills
 function showHelp() {
   const skills = getAvailableSkills()
-  console.log('\nUsage: npx coding-tutor-skill --skill <name> [--agent <agent>] [--print]')
+  console.log('\nUsage: npx coding-tutor-skill --skill <name> [--agent <agent>] [--print] [--dry-run]')
   console.log('\nAvailable skills:', skills.join(', ') || '(none)')
   console.log('Supported agents:', Object.keys(agents).join(', '))
   console.log('\nExamples:')
   console.log('  npx coding-tutor-skill --skill tutor')
   console.log('  npx coding-tutor-skill --skill tutor --agent claude-code')
   console.log('  npx coding-tutor-skill --skill tutor --agent codex')
+  console.log('  npx coding-tutor-skill --skill tutor --agent kilo-code')
   console.log('  npx coding-tutor-skill --skill tutor --print\n')
   process.exit(1)
 }
@@ -97,11 +109,26 @@ function install(agentKey) {
     process.exit(1)
   }
 
+  const sourcePath = agent.source ? agent.source(skillName) : skillSrc
+  if (!fs.existsSync(sourcePath)) {
+    console.error(`\nNo ${agent.label} installable found for skill "${skillName}".`)
+    console.error(`Expected: ${sourcePath}`)
+    process.exit(1)
+  }
+
   const targetDir = agent.target(skillName)
   const targetFile = agent.filename(skillName)
+  const targetPath = path.join(targetDir, targetFile)
+
+  if (dryRun) {
+    console.log(`\nDry run: ${skillName} would be installed for ${agent.label}`)
+    console.log(`  Source: ${sourcePath}`)
+    console.log(`  Target: ${targetPath}\n`)
+    return
+  }
 
   fs.mkdirSync(targetDir, { recursive: true })
-  fs.copyFileSync(skillSrc, path.join(targetDir, targetFile))
+  fs.copyFileSync(sourcePath, targetPath)
 
   console.log(`\n✓ ${skillName} skill installed for ${agent.label}`)
   console.log(`  ${agent.usage(skillName)}\n`)
@@ -125,7 +152,8 @@ if (forcedAgent) {
     console.log(`  npx coding-tutor-skill --skill ${skillName} --agent claude-code`)
     console.log(`  npx coding-tutor-skill --skill ${skillName} --agent cursor`)
     console.log(`  npx coding-tutor-skill --skill ${skillName} --agent opencode`)
-    console.log(`  npx coding-tutor-skill --skill ${skillName} --agent codex\n`)
+    console.log(`  npx coding-tutor-skill --skill ${skillName} --agent codex`)
+    console.log(`  npx coding-tutor-skill --skill ${skillName} --agent kilo-code\n`)
     process.exit(1)
   }
 }
